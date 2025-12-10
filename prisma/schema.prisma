@@ -4,9 +4,8 @@ datasource db {
 }
 
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
   previewFeatures = ["driverAdapters"]
-
 }
 
 model User {
@@ -16,7 +15,6 @@ model User {
   password         String
   stripeCustomerId String?
 
-  // 1:1 — apenas aponta, não define fields nem references
   subscription     Subscription?
 }
 
@@ -25,7 +23,8 @@ model Subscription {
   stripeSubId String @unique
   status      String
 
-  // 1:1 — ESTE é o lado que define a relação
   user   User  @relation(fields: [userId], references: [id])
   userId Int   @unique
+  currentPeriodEnd Int?
+
 }

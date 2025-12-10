@@ -1,19 +1,14 @@
-
 import { auth } from "@/auth";
 import { stripe } from "../lib/stripe";
 import { NextResponse } from "next/server";
 import { prisma } from "@/app/api/lib/prisma";
 
 // Status que contam como assinatura com acesso
-const validStripeStatuses = [
-  "active",
-  "trialing",
-  "past_due",
-  "unpaid",
-];
+const validStripeStatuses = ["active", "trialing", "past_due", "unpaid"];
 
 export async function GET() {
   try {
+    // 1️⃣ Pega sessão do usuário
     const session = await auth();
 
     if (!session?.user?.email) {
@@ -22,25 +17,23 @@ export async function GET() {
 
     const email = session.user.email;
 
-    // 1️⃣ Busca no banco de dados primeiro (cache)
+    // 2️⃣ Busca no banco de dados primeiro (cache)
     const user = await prisma.user.findUnique({
       where: { email },
-      include: {
-        subscription: true,
-      },
+      include: { subscription: true },
     });
 
     if (user?.subscription) {
       return NextResponse.json({
         subscription: {
-          id: user.subscription.stripeSubscriptionId,
+          id: user.subscription.stripeSubId, // corrigido
           status: user.subscription.status,
           current_period_end: user.subscription.currentPeriodEnd,
         },
       });
     }
 
-    // 2️⃣ Se não tiver no DB, busca no Stripe
+    // 3️⃣ Se não tiver no DB, busca no Stripe
     const customers = await stripe.customers.list({
       email,
       limit: 1,
@@ -55,21 +48,19 @@ export async function GET() {
 
     const subs = customer.subscriptions?.data || [];
 
-    const activeSub = subs.find((s) =>
-      validStripeStatuses.includes(s.status)
-    );
+    const activeSub = subs.find((s) => validStripeStatuses.includes(s.status));
 
     if (!activeSub) {
       return NextResponse.json({ subscription: null });
     }
 
-    // 3️⃣ Salva no banco como cache
+    // 4️⃣ Salva no banco como cache (upsert)
     await prisma.subscription.upsert({
       where: {
-        stripeSubscriptionId: activeSub.id,
+        stripeSubId: activeSub.id, // corrigido
       },
       create: {
-        stripeSubscriptionId: activeSub.id,
+        stripeSubId: activeSub.id, // corrigido
         status: activeSub.status,
         currentPeriodEnd: activeSub.current_period_end,
         user: {
@@ -82,6 +73,7 @@ export async function GET() {
       },
     });
 
+    // 5️⃣ Retorna os dados
     return NextResponse.json({
       subscription: {
         id: activeSub.id,
