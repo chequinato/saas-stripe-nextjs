@@ -1,83 +1,271 @@
-# SaaS com Next.js e Stripe
+SaaS Stripe Next.js – Assinatura de Ebook 📚💳
 
-> Este Mini Projeto faz parte da série **Criando um SaaS com Next.js**  
->  
-> Mini Projeto 1: [SaaS Landing Page com Next.js e Shadcn UI](https://codante.io/mini-projetos/saas-landing-page-com-nextjs-e-shadcn-ui)  
-> Mini Projeto 2: [SaaS - Autenticação com NextAuth, Prisma e Next.js 15](https://codante.io/mini-projetos/autenticacao-com-nextauth-prisma-e-nextjs-15)  
-> Mini Projeto 3: SaaS com Next.js e Stripe (este projeto)
+Aplicação SaaS desenvolvida com Next.js que implementa um sistema completo de assinatura recorrente utilizando o Stripe como provedor de pagamentos. O projeto permite que usuários autenticados assinem um plano mensal e tenham acesso exclusivo ao “Ebook do Mês”, disponível para download apenas enquanto a assinatura estiver ativa.
 
-Neste mini projeto, você irá adicionar o Stripe como meio de pagamento e gerenciador de assinaturas do seu projeto. Sua aplicação deve permitir que usuários possam assinar (através de pagamentos recorrentes) bem como cancelar suas assinaturas. O produto (Ebook do mês) só deverá ser exibido para aqueles que são assinantes ativos. 
+Este projeto faz parte da série Criando um SaaS com Next.js e representa o terceiro mini projeto da sequência, focado em pagamentos, assinaturas e regras de acesso a conteúdo premium.
 
+────────────────────
 
-## 🤓 Antes de começar
+Visão Geral
 
-Para este projeto, já temos o template inicial do projeto preparado no repositório. Ao fazer o fork você encontrará todos os arquivos iniciais. 
+O SaaS Stripe Next.js é uma aplicação web completa que simula um produto digital real baseado em assinatura.
 
->[!CAUTION]   
-> Como o Next 15 ainda é muito recente é possível que você encontre alguns erros de `peer deps` na hora de instalar suas dependências. É possível forçar uma instalação evitando esses erros usando o comando `npm install --force`.
+O fluxo é simples e realista:
 
-#### Setup do Turso
-Para que a autenticação funcione, é necessário que você tenha uma conta e database (gratuita) do [Turso](https://turso.tech) para a base de dados.
+o usuário cria uma conta e faz login
 
-Pegue suas credenciais e complete o `.env` (ou `.env.local`) com as chaves 
-- `TURSO_AUTH_TOKEN=`
-- `TURSO_DATABASE_URL=`
+realiza a assinatura mensal via Stripe
 
-Se você quiser mais informações, vide o [Mini Projeto anterior](https://codante.io/mini-projetos/autenticacao-com-nextauth-prisma-e-nextjs-15) desta série.
+após a confirmação do pagamento, o ebook é liberado no dashboard
 
-#### Setup do NextAuth
-No Mini Projeto anterior também fizemos o Setup do NextAuth. Para tal, é necessário que você coloque qualquer string aleatória na chave `AUTH_SECRET=` e sua url (provavelmente http://localhost:3000) na chave `AUTH_URL=` todos no `.env` (ou `.env.local`).
+o usuário pode gerenciar sua assinatura, alterar o método de pagamento ou cancelar
 
-## 🔨 Requisitos
+ao cancelar, o acesso ao ebook é automaticamente removido
 
-- **Faça o cadastro e setup de uma conta no Stripe**
-  - Crie uma conta e credenciais de teste no Stripe
+Todo o controle de pagamentos e assinaturas é feito pelo Stripe, enquanto a aplicação gerencia autenticação, autorização e experiência do usuário.
 
-> [!TIP]  
-> Recomendamos que você use os *sandboxes* do Stripe para testes. 
+────────────────────
 
-- **Implemente o pagamento recorrente da assinatura**
-  - Apenas usuários logados poderão assinar
-  - Utilize o Stripe como provedor de assinaturas
+Contexto do Projeto
 
-> [!TIP]  
-> Para facilitar o desenvolvimento você não precisa necessariamente utilizar a sua base de dados para gerenciar assinaturas. A escolha é sua, você deverá escolher se quer gerenciar assinante PRO pelo _Stripe_ ou pela base de dados. 
+Este projeto faz parte da série “Criando um SaaS com Next.js”:
 
-- **Implemente o cancelamento da assinatura**
-  - Implemente um botão que deverá estar na dashboard para cancelar a assinatura
-  - Apenas usuários logados e assinantes poderão cancelar
+Mini Projeto 1: SaaS Landing Page com Next.js e Shadcn UI
+Mini Projeto 2: SaaS – Autenticação com NextAuth, Prisma e Next.js 15
+Mini Projeto 3: SaaS com Next.js e Stripe (este projeto)
 
-- **Implemente a troca de meio de pagamento**
-  - Você poderá tanto implementar pela API (mais difícil) como redirecionando para o portal no-code do Stripe (mais fácil)
+O foco deste mini projeto é integrar o Stripe como meio de pagamento e gerenciador de assinaturas, aplicando regras reais de negócio e proteção de rotas.
 
-- **Proteger rotas**
-  - O produto (Ebook do Mês) somente deverá ser acessado por aqueles que possuem assinaturas ativas
-  - A tela de gerenciamento de assinatura somente deverá ser acessada por aqueles que possuem assinaturas ativas
+────────────────────
 
-- **Remover botoes (call to action) de assinatura caso o usuário já seja assinante**
-  - Para uma UX melhor, não faz sentido mostrar botões de "Assine Agora" para quem já é assinante. 
+Problema que o projeto resolve
 
-## 🎨 Design Sugerido
+Criar um sistema de assinatura envolve desafios técnicos e de negócio, como:
 
-O layout está no Figma e já está implementado no projeto. Você não precisará implementá-lo. 
+autenticação segura
 
-### Figma
+controle de acesso a conteúdo premium
 
-🔗 [Link do design](https://www.figma.com/community/file/1436880854972199964/mini-projeto-saas-com-next-js-e-stripe)
+pagamentos recorrentes
 
-## 👉🏽 Sobre esse mini-projeto
+cancelamento de assinaturas
 
-### O que você irá praticar:
+atualização de método de pagamento
 
-#### Next.js
+sincronização entre backend e gateway de pagamento
 
-- Conhecimentos sobre a configuração de páginas e rotas dinâmicas.
+Este projeto resolve esses problemas ao:
 
-#### Stripe
+integrar Stripe Billing para assinaturas recorrentes
 
-- Integração completa com o Stripe para pagamentos e gestão de assinaturas.
-- Integração do NextAuth com Prisma e base de dados. 
+proteger rotas e conteúdos com base no status da assinatura
 
-### Pré requisitos
+liberar ou bloquear o ebook automaticamente
 
-- Conhecimentos em JavaScript, React e NextJs.
+centralizar o gerenciamento de pagamento no Stripe
+
+Na prática, o projeto entrega uma base sólida para qualquer produto digital por assinatura.
+
+────────────────────
+
+Funcionalidades
+
+Cadastro e autenticação de usuários
+Login e logout
+Assinatura mensal via Stripe
+Pagamentos recorrentes
+Liberação do ebook apenas para assinantes ativos
+Dashboard do usuário
+Download do Ebook do Mês
+Cancelamento de assinatura
+Troca de método de pagamento
+Integração com Stripe Customer Portal
+Proteção de rotas
+Remoção de chamadas de assinatura para usuários já assinantes
+
+────────────────────
+
+Como o Stripe funciona no projeto
+
+Fluxo de assinatura:
+
+O usuário cria uma conta ou faz login.
+Acessa a página de assinatura.
+É redirecionado para o Stripe Checkout.
+Realiza o pagamento recorrente.
+O Stripe confirma a assinatura.
+A aplicação libera automaticamente o acesso ao ebook no dashboard.
+
+Fluxo de gerenciamento da assinatura:
+
+O usuário acessa o dashboard.
+Pode cancelar a assinatura.
+Pode alterar o método de pagamento.
+Essas ações são feitas via Stripe API ou Stripe Customer Portal.
+
+Quando a assinatura é cancelada ou expira, o acesso ao ebook é removido automaticamente.
+
+────────────────────
+
+Banco de Dados
+
+O projeto utiliza um banco de dados hospedado no Turso, baseado em SQLite distribuído.
+
+O banco é utilizado principalmente para:
+
+armazenar usuários
+
+gerenciar autenticação
+
+relacionar usuários com IDs do Stripe
+
+controlar permissões de acesso
+
+A autenticação e persistência são feitas utilizando Prisma ORM, garantindo consistência e facilidade de manutenção.
+
+────────────────────
+
+Autenticação
+
+A autenticação é implementada com NextAuth, integrada ao Prisma e ao banco de dados Turso.
+
+O sistema garante que:
+
+apenas usuários logados possam assinar
+
+apenas assinantes ativos acessem o ebook
+
+apenas assinantes acessem a tela de gerenciamento de assinatura
+
+────────────────────
+
+Tecnologias Utilizadas
+
+Frontend:
+Next.js 15
+React
+TypeScript
+Shadcn UI
+CSS moderno e componentes reutilizáveis
+
+Backend:
+API Routes do Next.js
+Node.js
+Stripe SDK
+NextAuth
+
+Banco de Dados:
+Turso (SQLite distribuído)
+Prisma ORM
+
+Pagamentos:
+Stripe Checkout
+Stripe Billing (assinaturas)
+Stripe Webhooks
+Stripe Customer Portal
+
+Outras ferramentas:
+dotenv
+Variáveis de ambiente
+Ambiente serverless
+
+────────────────────
+
+Arquitetura do Projeto
+
+O projeto segue a arquitetura padrão do Next.js, separando claramente frontend, backend e integrações externas.
+
+Pages e App Router para navegação
+API Routes para autenticação e Stripe
+Dashboard protegido por autenticação
+Integração centralizada com Stripe
+Banco de dados para persistência de usuários
+
+Essa arquitetura facilita a escalabilidade e a adição de novos produtos ou planos.
+
+────────────────────
+
+Pré-requisitos
+
+Node.js versão 18 ou superior
+Conta no Stripe
+Conta no Turso
+Gerenciador de pacotes npm ou yarn
+Conhecimentos básicos de Next.js e React
+
+────────────────────
+
+Instalação
+
+Clonar o repositório
+Instalar dependências (pode ser necessário usar --force devido ao Next 15)
+Configurar variáveis de ambiente
+Rodar o projeto em modo desenvolvimento
+
+────────────────────
+
+Variáveis de Ambiente
+
+TURSO_DATABASE_URL
+TURSO_AUTH_TOKEN
+
+AUTH_SECRET
+AUTH_URL
+
+NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY
+STRIPE_SECRET_KEY
+STRIPE_WEBHOOK_SECRET
+
+NEXT_PUBLIC_APP_URL
+
+────────────────────
+
+Execução do Projeto
+
+Após iniciar o projeto, o usuário pode acessar a aplicação pelo navegador, criar uma conta e realizar a assinatura. O Stripe gerencia os pagamentos e a aplicação controla o acesso ao conteúdo com base no status da assinatura.
+
+────────────────────
+
+Casos de Uso
+
+Venda de ebooks por assinatura
+Plataformas de conteúdo premium
+Produtos digitais recorrentes
+Base para SaaS educacional
+Assinaturas mensais de conteúdo
+
+────────────────────
+
+O que este projeto pratica
+
+Next.js e App Router
+Rotas dinâmicas e proteção de páginas
+Integração completa com Stripe
+Pagamentos recorrentes
+Autenticação com NextAuth
+Integração de banco de dados com Prisma
+Regras reais de negócio em SaaS
+
+────────────────────
+
+Roadmap e Evoluções Futuras
+
+Múltiplos planos de assinatura
+Mais de um ebook por mês
+Assinaturas anuais
+Cupons de desconto
+Dashboard administrativo
+Relatórios de faturamento
+
+────────────────────
+
+Contribuição
+
+O projeto aceita contribuições. Basta criar um fork, desenvolver em uma branch separada e abrir um Pull Request.
+
+────────────────────
+
+Licença
+
+MIT License
+Projeto desenvolvido por Chequinato
